@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npx tsc && nodemon ./src/server.ts",
-    "authTest": "jest --detectOpenHandles --coverage --forceExit --testPathPattern=auth"
+    "dev": "npx tsc && nodemon ./src/app.ts",
+    "productTest": "jest --detectOpenHandles --coverage --forceExit --testPathPattern=product"
   },
   "keywords": [],
   "author": "",

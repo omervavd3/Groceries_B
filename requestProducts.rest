@@ -1,0 +1,43 @@
+POST http://localhost:3000/products
+Content-Type: application/json
+
+{
+  "name": "Apple",
+  "description": "An apple a day keeps the doctor away",
+  "price": 1.99,
+  "imageUrl": "https://images.unsplash.com/photo",
+  "category":   {
+    "_id": "677d174539200e6f7602a063",
+    "name": "Fruits",
+    "__v": 0
+  }
+}
+
+###
+
+GET http://localhost:3000/products
+
+###
+
+GET http://localhost:3000/products/?category=677d174539200e6f7602a063
+
+###
+
+GET http://localhost:3000/products/677d185d39200e6f7602a06c
+
+###
+
+PUT http://localhost:3000/products/677d185d39200e6f7602a06c
+Content-Type: application/json
+
+{
+  "name": "Banana",
+  "description": "An apple a day keeps the doctor away",
+  "price": 3.99,
+  "imageUrl": "https://images.unsplash.com/photo",
+  "category": "677d174539200e6f7602a063"
+}
+
+###
+
+DELETE http://localhost:3000/products/677d0f52fe71ad595b63dd36

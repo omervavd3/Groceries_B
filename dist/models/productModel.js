@@ -21,6 +21,11 @@ const productSchema = new mongoose_1.default.Schema({
     imageUrl: {
         type: String,
         required: true
+    },
+    category: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: 'CategoryModel',
+        required: true
     }
 });
 exports.default = mongoose_1.default.model('ProductModel', productSchema);
