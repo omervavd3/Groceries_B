@@ -3,7 +3,7 @@ import initApp from '../server';
 import mongoose from 'mongoose';
 import ProductModel, {IProduct} from '../models/productModel';
 import CategoryModel, {ICategory} from '../models/categoryModel';
-import express, { Express } from 'express';
+import { Express } from 'express';
 
 var app: Express;
 

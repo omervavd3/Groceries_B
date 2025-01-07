@@ -8,8 +8,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //routes
 import productRouter from './routes/productRoutes';
 import categoryRouter from './routes/categoryRoutes';
+import cartRouter from './routes/cartRoutes';
 app.use('/products', productRouter);
 app.use('/categories', categoryRouter);
+app.use('/carts', cartRouter);
 
 //mongoose connection
 import mongoose from 'mongoose';
