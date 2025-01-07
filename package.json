@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "npx tsc && nodemon ./src/app.ts",
-    "productTest": "jest --detectOpenHandles --coverage --forceExit --testPathPattern=product"
+    "productTest": "jest --detectOpenHandles --coverage --forceExit --testPathPattern=product",
+    "categoryTest": "jest --detectOpenHandles --coverage --forceExit --testPathPattern=category",
+    "test": "jest --detectOpenHandles --coverage --forceExit"
   },
   "keywords": [],
   "author": "",
