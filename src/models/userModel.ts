@@ -1,7 +1,15 @@
 import mongoose from 'mongoose';
 
+export interface IUser {
+    _id?: string;
+    userName: string;
+    password: string;
+    email: string;
+    tokens?: string[];
+}
+
 const UserSchema = new mongoose.Schema({
-    username: {
+    userName: {
         type: String,
         required: true,
         unique: true,
@@ -14,6 +22,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true
+    },
+    tokens: {
+        type: [String],
+        default: []
     }
 })
 
