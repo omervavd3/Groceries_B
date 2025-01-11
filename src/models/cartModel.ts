@@ -13,24 +13,19 @@ export interface ICart {
 
 const cartSchema = new mongoose.Schema({
   productsIds: {
-    type: Array,
-    default: [],
+    type: [String],
   },
   productsNames: {
-    type: Array,
-    default: [],
+    type: [String],
   },
   productsAmounts: {
-    type: Array,
-    default: [],
+    type: [Number],
   },
   productsPrices: {
-    type: Array,
-    default: [],
+    type: [Number],
   },
   users: {
-    type: Array,
-    default: [],
+    type: [String],
   },
   admin: {
     type: String,

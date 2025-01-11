@@ -1,4 +1,3 @@
-import exp from "constants";
 import authController from "../controllers/authController";
 import express from 'express';
 const authRouter = express.Router();

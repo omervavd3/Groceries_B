@@ -3,6 +3,7 @@ import BaseController from "./baseController";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import userModel from "../models/userModel";
 
 class cartController extends BaseController<ICart> {
   constructor() {
@@ -31,6 +32,11 @@ class cartController extends BaseController<ICart> {
   async create(req: Request, res: Response) {
     const { adminId, cartName } = req.body;
     try {
+      const user = await userModel.findById({ _id: adminId });
+      if (!user) {
+        res.status(404).send({ message: "User not found" });
+        return;
+      }
       const salt = await bcrypt.genSalt(10);
       const hashAdmin = await bcrypt.hash(adminId, salt);
       const data = new cartModel({
@@ -40,9 +46,9 @@ class cartController extends BaseController<ICart> {
         productsAmounts: [],
         productsPrices: [],
         users: [],
-        cartName,
+        cartName: cartName,
       });
-      data.users.push(adminId);
+      data.users.push(hashAdmin);
       await data.save();
       res.status(201).send(data);
     } catch (error) {
@@ -52,7 +58,7 @@ class cartController extends BaseController<ICart> {
 
   async addProduct(req: Request, res: Response) {
     const id = req.params.id;
-    const { productId, productName, price } = req.body;
+    const { productId, productName, producPrice } = req.body;
     try {
       const cart = await cartModel.findById({ _id: id });
       if (!cart) {
@@ -61,7 +67,7 @@ class cartController extends BaseController<ICart> {
         for (let i = 0; i < cart.productsIds.length; i++) {
           if (cart.productsIds[i] === productId) {
             cart.productsAmounts[i] += 1;
-            cart.productsPrices[i] += price;
+            cart.productsPrices[i] += producPrice;
             await cart.save();
             res.status(200).send(cart);
             return;
@@ -70,7 +76,7 @@ class cartController extends BaseController<ICart> {
         cart.productsIds.push(productId);
         cart.productsNames.push(productName);
         cart.productsAmounts.push(1);
-        cart.productsPrices.push(price);
+        cart.productsPrices.push(producPrice);
         await cart.save();
         res.status(201).send(cart);
       }
@@ -126,13 +132,13 @@ class cartController extends BaseController<ICart> {
 
   async addUser(req: Request, res: Response) {
     const id = req.params.id;
-    const { userId, adminPassword } = req.body;
+    const { userId } = req.body;
     try {
       const cart = await cartModel.findById({ _id: id });
       if (!cart) {
         res.status(404).send({ message: "Cart not found" });
       } else {
-        const userInCart = await cart.users.find((user) =>
+        const userInCart = await cart.users.find((user: any) =>
           bcrypt.compare(userId, user._id)
         );
         if (userInCart) {
@@ -158,7 +164,7 @@ class cartController extends BaseController<ICart> {
       if (!cart) {
         res.status(404).send({ message: "Cart not found" });
       } else {
-        const userInCart = await cart.users.find((user) =>
+        const userInCart = await cart.users.find((user: any) =>
           bcrypt.compare(userId, user._id)
         );
         if (!userInCart) {
@@ -186,7 +192,7 @@ class cartController extends BaseController<ICart> {
       res.status(404).send({ message: "Cart not found" });
       return;
     }
-    const validId = await bcrypt.compare(adminId, req.body.admin);
+    const validId = await bcrypt.compare(adminId, cart.admin);
     if (!validId) {
       res.status(400).send({ message: "Invalid admin id" });
       return;
@@ -206,14 +212,16 @@ class cartController extends BaseController<ICart> {
       res.status(404).send({ message: "Cart not found" });
       return;
     }
-    const userInCart = await cart.users.find((user) =>
-      bcrypt.compare(userId, user._id)
-    );
-    if (!userInCart) {
-      res.status(400).send({ message: "User not in cart" });
-      return;
+    const cartUsers = cart.users;
+    for (let i = 0; i < cartUsers.length; i++) {
+      const validId = await bcrypt.compare(userId, cartUsers[i]);
+      if (validId) {
+        next();
+        return;
+      }
     }
-    next();
+    res.status(400).send({ message: "Invalid user id" });
+    return;
   }
 }
 

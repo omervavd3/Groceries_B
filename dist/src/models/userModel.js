@@ -23,10 +23,6 @@ const UserSchema = new mongoose_1.default.Schema({
         type: [String],
         default: []
     },
-    cartTokens: {
-        type: [String],
-        default: []
-    }
 });
 exports.default = mongoose_1.default.model('UserModel', UserSchema);
 //# sourceMappingURL=userModel.js.map

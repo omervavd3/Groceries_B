@@ -27,7 +27,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const hashPassword = yield bcrypt_1.default.hash(password, salt);
         const newUser = new userModel_1.default({ email, password: hashPassword, userName });
         yield newUser.save();
-        res.status(201).send({ newUser });
+        res.status(201).send(newUser);
     }
     catch (error) {
         res.status(500).send({ error });
@@ -48,8 +48,8 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
         const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-        const jwtExpiresIn = process.env.jwt_EXPIRES_IN;
-        if (!refreshTokenSecret || !accessTokenSecret || !jwtExpiresIn) {
+        const jwtExpiresIn = process.env.JWT_EXPIRES_IN;
+        if (refreshTokenSecret == null || accessTokenSecret == null || jwtExpiresIn == null) {
             res.status(500).send({ message: "No secret token" });
             return;
         }

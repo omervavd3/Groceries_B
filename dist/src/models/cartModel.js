@@ -6,24 +6,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const cartSchema = new mongoose_1.default.Schema({
     productsIds: {
-        type: Array,
-        default: [],
+        type: [String],
     },
     productsNames: {
-        type: Array,
-        default: [],
+        type: [String],
     },
     productsAmounts: {
-        type: Array,
-        default: [],
+        type: [Number],
     },
     productsPrices: {
-        type: Array,
-        default: [],
+        type: [Number],
     },
     users: {
-        type: Array,
-        default: [],
+        type: [String],
     },
     admin: {
         type: String,

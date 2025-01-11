@@ -15,7 +15,7 @@ const register = async (req: Request, res: Response) => {
     const hashPassword = await bcrypt.hash(password, salt);
     const newUser = new userModel({ email, password: hashPassword, userName });
     await newUser.save();
-    res.status(201).send({ newUser });
+    res.status(201).send( newUser );
   } catch (error) {
     res.status(500).send({ error });
   }
@@ -36,8 +36,8 @@ const login = async (req: Request, res: Response) => {
     }
     const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
     const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-    const jwtExpiresIn = process.env.jwt_EXPIRES_IN;
-    if (!refreshTokenSecret || !accessTokenSecret || !jwtExpiresIn) {
+    const jwtExpiresIn = process.env.JWT_EXPIRES_IN;
+    if (refreshTokenSecret == null || accessTokenSecret == null || jwtExpiresIn == null) {
       res.status(500).send({ message: "No secret token" });
       return;
     }

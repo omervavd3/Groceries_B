@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cartModel_1 = __importDefault(require("../models/cartModel"));
 const baseController_1 = __importDefault(require("./baseController"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const userModel_1 = __importDefault(require("../models/userModel"));
 class cartController extends baseController_1.default {
     constructor() {
         super(cartModel_1.default, "name");
@@ -41,6 +42,11 @@ class cartController extends baseController_1.default {
         return __awaiter(this, void 0, void 0, function* () {
             const { adminId, cartName } = req.body;
             try {
+                const user = yield userModel_1.default.findById({ _id: adminId });
+                if (!user) {
+                    res.status(404).send({ message: "User not found" });
+                    return;
+                }
                 const salt = yield bcrypt_1.default.genSalt(10);
                 const hashAdmin = yield bcrypt_1.default.hash(adminId, salt);
                 const data = new cartModel_1.default({
@@ -50,9 +56,9 @@ class cartController extends baseController_1.default {
                     productsAmounts: [],
                     productsPrices: [],
                     users: [],
-                    cartName,
+                    cartName: cartName,
                 });
-                data.users.push(adminId);
+                data.users.push(hashAdmin);
                 yield data.save();
                 res.status(201).send(data);
             }
@@ -64,7 +70,7 @@ class cartController extends baseController_1.default {
     addProduct(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
-            const { productId, productName, price } = req.body;
+            const { productId, productName, producPrice } = req.body;
             try {
                 const cart = yield cartModel_1.default.findById({ _id: id });
                 if (!cart) {
@@ -74,7 +80,7 @@ class cartController extends baseController_1.default {
                     for (let i = 0; i < cart.productsIds.length; i++) {
                         if (cart.productsIds[i] === productId) {
                             cart.productsAmounts[i] += 1;
-                            cart.productsPrices[i] += price;
+                            cart.productsPrices[i] += producPrice;
                             yield cart.save();
                             res.status(200).send(cart);
                             return;
@@ -83,7 +89,7 @@ class cartController extends baseController_1.default {
                     cart.productsIds.push(productId);
                     cart.productsNames.push(productName);
                     cart.productsAmounts.push(1);
-                    cart.productsPrices.push(price);
+                    cart.productsPrices.push(producPrice);
                     yield cart.save();
                     res.status(201).send(cart);
                 }
@@ -147,7 +153,7 @@ class cartController extends baseController_1.default {
     addUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
-            const { userId, adminPassword } = req.body;
+            const { userId } = req.body;
             try {
                 const cart = yield cartModel_1.default.findById({ _id: id });
                 if (!cart) {
@@ -209,7 +215,7 @@ class cartController extends baseController_1.default {
                 res.status(404).send({ message: "Cart not found" });
                 return;
             }
-            const validId = yield bcrypt_1.default.compare(adminId, req.body.admin);
+            const validId = yield bcrypt_1.default.compare(adminId, cart.admin);
             if (!validId) {
                 res.status(400).send({ message: "Invalid admin id" });
                 return;
@@ -230,12 +236,16 @@ class cartController extends baseController_1.default {
                 res.status(404).send({ message: "Cart not found" });
                 return;
             }
-            const userInCart = yield cart.users.find((user) => bcrypt_1.default.compare(userId, user._id));
-            if (!userInCart) {
-                res.status(400).send({ message: "User not in cart" });
-                return;
+            const cartUsers = cart.users;
+            for (let i = 0; i < cartUsers.length; i++) {
+                const validId = yield bcrypt_1.default.compare(userId, cartUsers[i]);
+                if (validId) {
+                    next();
+                    return;
+                }
             }
-            next();
+            res.status(400).send({ message: "Invalid user id" });
+            return;
         });
     }
 }
