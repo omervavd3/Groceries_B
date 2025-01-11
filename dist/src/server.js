@@ -21,9 +21,11 @@ app.use(body_parser_1.default.urlencoded({ extended: true }));
 const productRoutes_1 = __importDefault(require("./routes/productRoutes"));
 const categoryRoutes_1 = __importDefault(require("./routes/categoryRoutes"));
 const cartRoutes_1 = __importDefault(require("./routes/cartRoutes"));
+const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 app.use('/products', productRoutes_1.default);
 app.use('/categories', categoryRoutes_1.default);
 app.use('/carts', cartRoutes_1.default);
+app.use('/auth', authRoutes_1.default);
 //mongoose connection
 const mongoose_1 = __importDefault(require("mongoose"));
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/groceries';

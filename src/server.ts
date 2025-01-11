@@ -9,9 +9,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 import productRouter from './routes/productRoutes';
 import categoryRouter from './routes/categoryRoutes';
 import cartRouter from './routes/cartRoutes';
+import authRouter from './routes/authRoutes';
 app.use('/products', productRouter);
 app.use('/categories', categoryRouter);
 app.use('/carts', cartRouter);
+app.use('/auth', authRouter);
 
 //mongoose connection
 import mongoose from 'mongoose';

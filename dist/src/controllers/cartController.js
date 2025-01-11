@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const cartModel_1 = __importDefault(require("../models/cartModel"));
 const baseController_1 = __importDefault(require("./baseController"));
+const bcrypt_1 = __importDefault(require("bcrypt"));
 class cartController extends baseController_1.default {
     constructor() {
         super(cartModel_1.default, "name");
@@ -38,9 +39,20 @@ class cartController extends baseController_1.default {
     }
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { admin, cartName } = req.body;
+            const { adminId, cartName } = req.body;
             try {
-                const data = new cartModel_1.default({ admin, productsIds: [], productsNames: [], productsAmounts: [], productsPrices: [], users: [], cartName });
+                const salt = yield bcrypt_1.default.genSalt(10);
+                const hashAdmin = yield bcrypt_1.default.hash(adminId, salt);
+                const data = new cartModel_1.default({
+                    admin: hashAdmin,
+                    productsIds: [],
+                    productsNames: [],
+                    productsAmounts: [],
+                    productsPrices: [],
+                    users: [],
+                    cartName,
+                });
+                data.users.push(adminId);
                 yield data.save();
                 res.status(201).send(data);
             }
@@ -130,6 +142,100 @@ class cartController extends baseController_1.default {
             catch (error) {
                 res.status(500).send({ error });
             }
+        });
+    }
+    addUser(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const { userId, adminPassword } = req.body;
+            try {
+                const cart = yield cartModel_1.default.findById({ _id: id });
+                if (!cart) {
+                    res.status(404).send({ message: "Cart not found" });
+                }
+                else {
+                    const userInCart = yield cart.users.find((user) => bcrypt_1.default.compare(userId, user._id));
+                    if (userInCart) {
+                        res.status(400).send({ message: "User already in cart" });
+                        return;
+                    }
+                    const salt = yield bcrypt_1.default.genSalt(10);
+                    const userHash = yield bcrypt_1.default.hash(userId, salt);
+                    cart.users.push(userHash);
+                    yield cart.save();
+                    res.status(200).send(cart);
+                }
+            }
+            catch (error) {
+                res.status(500).send({ error });
+            }
+        });
+    }
+    removeUser(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            const { userId } = req.body;
+            try {
+                const cart = yield cartModel_1.default.findById({ _id: id });
+                if (!cart) {
+                    res.status(404).send({ message: "Cart not found" });
+                }
+                else {
+                    const userInCart = yield cart.users.find((user) => bcrypt_1.default.compare(userId, user._id));
+                    if (!userInCart) {
+                        res.status(400).send({ message: "User not in cart" });
+                        return;
+                    }
+                    cart.users.splice(cart.users.indexOf(userInCart), 1);
+                    yield cart.save();
+                    res.status(200).send(cart);
+                }
+            }
+            catch (error) {
+                res.status(500).send({ error });
+            }
+        });
+    }
+    adminMiddleware(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const adminId = req.body.adminId;
+            const cartId = req.params.id;
+            if (!adminId) {
+                res.status(400).send({ message: "No admin id" });
+                return;
+            }
+            const cart = yield cartModel_1.default.findById({ _id: cartId });
+            if (!cart) {
+                res.status(404).send({ message: "Cart not found" });
+                return;
+            }
+            const validId = yield bcrypt_1.default.compare(adminId, req.body.admin);
+            if (!validId) {
+                res.status(400).send({ message: "Invalid admin id" });
+                return;
+            }
+            next();
+        });
+    }
+    userMiddleware(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const userId = req.body.userId;
+            const cartId = req.params.id;
+            if (!userId) {
+                res.status(400).send({ message: "No user id" });
+                return;
+            }
+            const cart = yield cartModel_1.default.findById({ _id: cartId });
+            if (!cart) {
+                res.status(404).send({ message: "Cart not found" });
+                return;
+            }
+            const userInCart = yield cart.users.find((user) => bcrypt_1.default.compare(userId, user._id));
+            if (!userInCart) {
+                res.status(400).send({ message: "User not in cart" });
+                return;
+            }
+            next();
         });
     }
 }

@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/routes/productRoutes.ts</title>
+    <title>Code coverage report for src/routes/authRoutes.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,7 +19,7 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/routes</a> productRoutes.ts</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/routes</a> authRoutes.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
@@ -74,8 +74,7 @@
 <a name='L9'></a><a href='#L9'>9</a>
 <a name='L10'></a><a href='#L10'>10</a>
 <a name='L11'></a><a href='#L11'>11</a>
-<a name='L12'></a><a href='#L12'>12</a>
-<a name='L13'></a><a href='#L13'>13</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L12'></a><a href='#L12'>12</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -86,20 +85,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">//router for product routes
-import ProductController from '../controllers/productController';
+<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">import exp from "constants";
+import authController from "../controllers/authController";
 import express from 'express';
-const productRouter = express.Router();
+const authRouter = express.Router();
 &nbsp;
-productRouter
-    .get('/', ProductController.getAll.bind(ProductController))
-    .post('/', ProductController.create.bind(ProductController))
-    .get('/:id', ProductController.getById.bind(ProductController))
-    .put('/:id', ProductController.update.bind(ProductController))
-    .delete('/:id', ProductController.deleteItem.bind(ProductController))
+authRouter
+    .post('/register', authController.register.bind(authController))
+    .post('/login', authController.login.bind(authController))
+    .post('/logout' ,authController.logout.bind(authController))
+    .post('/refresh' ,authController.refresh.bind(authController))
 &nbsp;
-export default productRouter;</pre></td></tr></table></pre>
+export default authRouter;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->

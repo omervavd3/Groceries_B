@@ -8,6 +8,7 @@
     "productTest": "jest --detectOpenHandles --coverage --forceExit --testPathPattern=product",
     "categoryTest": "jest --detectOpenHandles --coverage --forceExit --testPathPattern=category",
     "cartTest": "jest --detectOpenHandles --coverage --forceExit --testPathPattern=cart",
+    "authTest": "jest --detectOpenHandles --coverage --forceExit --testPathPattern=auth",
     "test": "jest --detectOpenHandles --coverage --forceExit"
   },
   "keywords": [],

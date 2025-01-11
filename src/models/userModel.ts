@@ -6,6 +6,7 @@ export interface IUser {
     password: string;
     email: string;
     tokens?: string[];
+    cartTokens?: string[];
 }
 
 const UserSchema = new mongoose.Schema({
@@ -24,6 +25,10 @@ const UserSchema = new mongoose.Schema({
         unique: true
     },
     tokens: {
+        type: [String],
+        default: []
+    },
+    cartTokens: {
         type: [String],
         default: []
     }
