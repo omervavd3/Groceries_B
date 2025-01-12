@@ -30,7 +30,8 @@ class cartController extends BaseController<ICart> {
   }
 
   async create(req: Request, res: Response) {
-    const { adminId, cartName } = req.body;
+    const { cartName } = req.body;
+    const adminId = req.params.idFromAuth;
     try {
       const user = await userModel.findById({ _id: adminId });
       if (!user) {
@@ -138,12 +139,13 @@ class cartController extends BaseController<ICart> {
       if (!cart) {
         res.status(404).send({ message: "Cart not found" });
       } else {
-        const userInCart = await cart.users.find((user: any) =>
-          bcrypt.compare(userId, user._id)
-        );
-        if (userInCart) {
-          res.status(400).send({ message: "User already in cart" });
-          return;
+        const cartUsers = cart.users;
+        for (let i = 0; i < cartUsers.length; i++) {
+          const validId = await bcrypt.compare(userId, cartUsers[i]);
+          if (validId) {
+            res.status(400).send({ message: "User already in cart" });
+            return;
+          }
         }
         const salt = await bcrypt.genSalt(10);
         const userHash = await bcrypt.hash(userId, salt);
@@ -164,16 +166,31 @@ class cartController extends BaseController<ICart> {
       if (!cart) {
         res.status(404).send({ message: "Cart not found" });
       } else {
-        const userInCart = await cart.users.find((user: any) =>
-          bcrypt.compare(userId, user._id)
-        );
-        if (!userInCart) {
-          res.status(400).send({ message: "User not in cart" });
-          return;
+        const cartUsers = cart.users;
+        for (let i = 0; i < cartUsers.length; i++) {
+          const validId = await bcrypt.compare(userId, cartUsers[i]);
+          if (validId) {
+            cart.users.splice(i, 1);
+            await cart.save();
+            res.status(200).send(cart);
+            return;
+          }
         }
-        cart.users.splice(cart.users.indexOf(userInCart), 1);
-        await cart.save();
-        res.status(200).send(cart);
+        res.status(404).send({ message: "User not found" });
+      }
+    } catch (error) {
+      res.status(500).send({ error });
+    }
+  }
+
+  async delete(req: Request, res: Response) {
+    const id = req.params.id;
+    try {
+      const data = await cartModel.findByIdAndDelete({ _id: id });
+      if (data) {
+        res.status(200).send(data);
+      } else {
+        res.status(404).send({ message: "Cart not found" });
       }
     } catch (error) {
       res.status(500).send({ error });
@@ -181,7 +198,7 @@ class cartController extends BaseController<ICart> {
   }
 
   async adminMiddleware(req: Request, res: Response, next: any) {
-    const adminId = req.body.adminId;
+    const adminId = req.params.idFromAuth;
     const cartId = req.params.id;
     if (!adminId) {
       res.status(400).send({ message: "No admin id" });
@@ -201,7 +218,7 @@ class cartController extends BaseController<ICart> {
   }
 
   async userMiddleware(req: Request, res: Response, next: any) {
-    const userId = req.body.userId;
+    const userId = req.params.idFromAuth;
     const cartId = req.params.id;
     if (!userId) {
       res.status(400).send({ message: "No user id" });

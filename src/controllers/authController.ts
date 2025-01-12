@@ -205,7 +205,7 @@ const autMiddleware = async (req: Request, res: Response, next: any) => {
       res.status(403).send("Error in middleware");
       return;
     }
-    req.params.userId = (payload as payload)._id;
+    req.params.idFromAuth = (payload as payload)._id;
     next();
   });
 };
