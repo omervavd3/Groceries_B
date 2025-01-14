@@ -40,7 +40,8 @@ class cartController extends baseController_1.default {
     }
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { adminId, cartName } = req.body;
+            const { cartName } = req.body;
+            const adminId = req.params.idFromAuth;
             try {
                 const user = yield userModel_1.default.findById({ _id: adminId });
                 if (!user) {
@@ -160,10 +161,13 @@ class cartController extends baseController_1.default {
                     res.status(404).send({ message: "Cart not found" });
                 }
                 else {
-                    const userInCart = yield cart.users.find((user) => bcrypt_1.default.compare(userId, user._id));
-                    if (userInCart) {
-                        res.status(400).send({ message: "User already in cart" });
-                        return;
+                    const cartUsers = cart.users;
+                    for (let i = 0; i < cartUsers.length; i++) {
+                        const validId = yield bcrypt_1.default.compare(userId, cartUsers[i]);
+                        if (validId) {
+                            res.status(400).send({ message: "User already in cart" });
+                            return;
+                        }
                     }
                     const salt = yield bcrypt_1.default.genSalt(10);
                     const userHash = yield bcrypt_1.default.hash(userId, salt);
@@ -187,14 +191,34 @@ class cartController extends baseController_1.default {
                     res.status(404).send({ message: "Cart not found" });
                 }
                 else {
-                    const userInCart = yield cart.users.find((user) => bcrypt_1.default.compare(userId, user._id));
-                    if (!userInCart) {
-                        res.status(400).send({ message: "User not in cart" });
-                        return;
+                    const cartUsers = cart.users;
+                    for (let i = 0; i < cartUsers.length; i++) {
+                        const validId = yield bcrypt_1.default.compare(userId, cartUsers[i]);
+                        if (validId) {
+                            cart.users.splice(i, 1);
+                            yield cart.save();
+                            res.status(200).send(cart);
+                            return;
+                        }
                     }
-                    cart.users.splice(cart.users.indexOf(userInCart), 1);
-                    yield cart.save();
-                    res.status(200).send(cart);
+                    res.status(404).send({ message: "User not found" });
+                }
+            }
+            catch (error) {
+                res.status(500).send({ error });
+            }
+        });
+    }
+    delete(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = req.params.id;
+            try {
+                const data = yield cartModel_1.default.findByIdAndDelete({ _id: id });
+                if (data) {
+                    res.status(200).send(data);
+                }
+                else {
+                    res.status(404).send({ message: "Cart not found" });
                 }
             }
             catch (error) {
@@ -204,7 +228,7 @@ class cartController extends baseController_1.default {
     }
     adminMiddleware(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const adminId = req.body.adminId;
+            const adminId = req.params.idFromAuth;
             const cartId = req.params.id;
             if (!adminId) {
                 res.status(400).send({ message: "No admin id" });
@@ -225,7 +249,7 @@ class cartController extends baseController_1.default {
     }
     userMiddleware(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const userId = req.body.userId;
+            const userId = req.params.idFromAuth;
             const cartId = req.params.id;
             if (!userId) {
                 res.status(400).send({ message: "No user id" });

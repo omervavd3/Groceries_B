@@ -186,7 +186,7 @@ const autMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, func
             res.status(403).send("Error in middleware");
             return;
         }
-        req.params.userId = payload._id;
+        req.params.idFromAuth = payload._id;
         next();
     });
 });

@@ -12,7 +12,7 @@ cartRouter
     .post('/', authController_1.default.autMiddleware.bind(authController_1.default), cartController_1.default.create.bind(cartController_1.default))
     .get('/:id', cartController_1.default.getById.bind(cartController_1.default))
     .put('/:id', cartController_1.default.update.bind(cartController_1.default))
-    .delete('/:id', cartController_1.default.adminMiddleware.bind(cartController_1.default), cartController_1.default.deleteItem.bind(cartController_1.default))
+    .delete('/:id', authController_1.default.autMiddleware.bind(authController_1.default), cartController_1.default.adminMiddleware.bind(cartController_1.default), cartController_1.default.delete.bind(cartController_1.default))
     .post('/addProduct/:id', authController_1.default.autMiddleware.bind(authController_1.default), cartController_1.default.userMiddleware.bind(cartController_1.default), cartController_1.default.addProduct.bind(cartController_1.default))
     .post('/removeProduct/:id', authController_1.default.autMiddleware.bind(authController_1.default), cartController_1.default.userMiddleware.bind(cartController_1.default), cartController_1.default.removeProduct.bind(cartController_1.default))
     .put('/clearCart/:id', authController_1.default.autMiddleware.bind(authController_1.default), cartController_1.default.userMiddleware.bind(cartController_1.default), cartController_1.default.clearCart.bind(cartController_1.default))

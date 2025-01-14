@@ -2,14 +2,12 @@ POST http://localhost:3000/products
 Content-Type: application/json
 
 {
-  "name": "Apple",
-  "description": "An apple a day keeps the doctor away",
+  "name": "Milk",
+  "description": "Fresh milk from the farm",
   "price": 1.99,
-  "imageUrl": "https://images.unsplash.com/photo",
+  "imageUrl": "https://previews.123rf.com/images/coprid/coprid1212/coprid121200010/16819009-plastic-bottle-of-milk-with-label-isolated-on-white.jpg",
   "category":   {
-    "_id": "677d174539200e6f7602a063",
-    "name": "Fruits",
-    "__v": 0
+    "_id": "6783dbaaaad0a3ccdfa731dc"
   }
 }
 
@@ -27,14 +25,14 @@ GET http://localhost:3000/products/677d185d39200e6f7602a06c
 
 ###
 
-PUT http://localhost:3000/products/677d185d39200e6f7602a06c
+PUT http://localhost:3000/products/6783d093aad0a3ccdfa72ff2
 Content-Type: application/json
 
 {
-  "name": "Banana",
+  "name": "Apple",
   "description": "An apple a day keeps the doctor away",
   "price": 3.99,
-  "imageUrl": "https://images.unsplash.com/photo",
+  "imageUrl": "https://media.istockphoto.com/id/184276818/photo/red-apple.jpg?s=612x612&w=0&k=20&c=NvO-bLsG0DJ_7Ii8SSVoKLurzjmV0Qi4eGfn6nW3l5w=",
   "category": "677d174539200e6f7602a063"
 }
 
